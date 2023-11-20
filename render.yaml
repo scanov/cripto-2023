@@ -1,5 +1,6 @@
 databases:
   - name: proyecto
+    plan: free
     databaseName: proyecto
     user: proyecto
 
