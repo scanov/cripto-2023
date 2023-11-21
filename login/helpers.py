@@ -1,6 +1,9 @@
 from django.utils import timezone
 from .models import Sesion
 
+#Segundos antes de que expire una sesión
+SESSION_EXPIRATION_TIME = 86400
+
 # Parámetros de Diffie-Hellman
 
 g = 2
@@ -28,7 +31,7 @@ PB = (N, e)
 def sesiones_activas():
     sesiones = list()
     for sesion in Sesion.objects.all():
-        if (timezone.now() - sesion.timestamp).total_seconds() < 300:
+        if (timezone.now() - sesion.timestamp).total_seconds() < SESSION_EXPIRATION_TIME:
             sesiones.append(sesion)
     return sesiones
 
