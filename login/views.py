@@ -20,4 +20,4 @@ def ssh1(request):
     sesion = Sesion(ra=data["ra"], rb=rb)
     sesion.save()
     # Retornar rb
-    return JsonResponse(data, status=status.HTTP_200_OK)
+    return JsonResponse({"rb": rb}, status=status.HTTP_200_OK)
