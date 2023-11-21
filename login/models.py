@@ -9,21 +9,29 @@ class Sesion(models.Model):
         verbose_name="ID",
         editable=False,
     )
-    ra = models.IntegerField()
-    rb = models.IntegerField()
-    ga_mod_p = models.IntegerField(
+    ra = models.CharField(
+        max_length=255,
+        blank=False)
+    rb = models.CharField(
+        max_length=255,
+        blank=False)
+    ga_mod_p = models.TextField(
+        max_length = 300,
         null=True,
         blank=True
     )
-    b = models.IntegerField(
+    b = models.CharField(
+        max_length=255,
         null=True,
         blank=True
     )
-    gb_mod_p = models.IntegerField(
+    gb_mod_p = models.TextField(
+        max_length = 300,
         null=True,
         blank=True
     )
-    k = models.IntegerField(
+    k = models.CharField(
+        max_length=255,
         null=True,
         blank=True
     )
