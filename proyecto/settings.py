@@ -36,7 +36,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'render.apps.RenderConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +44,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+               ]
+
+DEPENDENCIES_APPS = [
+    'rest_framework',
+    'coreapi',
 ]
+
+PROYECTO_APPS = [
+    'login',
+]
+
+INSTALLED_APPS = DJANGO_APPS + DEPENDENCIES_APPS + PROYECTO_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,8 +95,7 @@ WSGI_APPLICATION = 'proyecto.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Feel free to alter this value to suit your needs.
-        default=os.environ.get('DATABASE_URL', default=os.environ.get('STR_CONNECTION')),
-        conn_max_age=600
+        default=os.environ.get('DATABASE_URL', default=os.environ.get('STR_CONNECTION'))
     )
 }
 
