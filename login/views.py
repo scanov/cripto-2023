@@ -4,7 +4,7 @@ from rest_framework import status
 from secrets import randbits
 
 from .models import Sesion
-from .helpers import is_logged_in, get_sesion, g, p, PB, h, N, e, decrypt
+from .helpers import is_logged_in, get_sesion, g, p, PB, h, N, e, decrypt, NA
 from os import environ
 
 
@@ -80,22 +80,26 @@ def ssh3(request):
         return JsonResponse({"message": "Datos incorrectos"}, status=status.HTTP_400_BAD_REQUEST)
     # Desencriptar encripcion usando k
     C = data["encripcion"]
-    # k = sesion.k
-    # IV = data["iv"]
-    k = "16e23917ab07d00a81ffe3dfbc89435fbb50d62bdd81bdca2d01032bbd2248ff".upper()
-    IV = "90dce8cee5be815aec8a92b7591c9d80".upper()
-    desencripcion = decrypt(C, k, IV)
+    k = sesion.k
+    IV = data["iv"]
+    try:
+        desencripcion = decrypt(C, k, IV)
+    except:
+        return JsonResponse({"message": "Encripcion incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
     print(f"{desencripcion=}")
     # Verificar que la desencripcion contiene a "Alice"
     if "Alice" not in desencripcion:
         return JsonResponse({"message": "Encripcion incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
     # Obtener la llave pública de Alice del comienzo de la desencripcion hasta "Alice"
-    eA = desencripcion[:desencripcion.index("Alice")]
-    # Verificar la firma de Alice
-    SA_signed = desencripcion[desencripcion.index("Alice") + 5:]
-    print(f"{SA_signed=}")
-    SA = pow(int(SA_signed, 16), int(eA, 16), int(N, 16)).to_bytes(256, "big").decode("utf-8")
-    print(f"{SA=}")
+    try:
+        eA = desencripcion[:desencripcion.index("Alice")]
+        # Verificar la firma de Alice
+        SA_signed = desencripcion[desencripcion.index("Alice") + 5:]
+        print(f"{SA_signed=}")
+        SA_int = str(hex(pow(int(SA_signed, 16), int(eA, 16), int(NA, 16))))[2:].upper()
+        SA = bytes.fromhex(SA_int).decode('utf-8')
+    except:
+        return JsonResponse({"message": "Firma incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
     if not SA.endswith("Alice") or SA[:-5] != sesion.h:
         return JsonResponse({"message": "Firma incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
     # Activar el tunel y retornar mensaje de tunel establecido
