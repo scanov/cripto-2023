@@ -35,4 +35,10 @@ class Sesion(models.Model):
         null=True,
         blank=True
     )
+    h = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
+    tunel_establecido = models.BooleanField(default=False)

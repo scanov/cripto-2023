@@ -1,8 +1,14 @@
 from django.utils import timezone
 from .models import Sesion
+from hashlib import sha256
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+import base64
 
 #Segundos antes de que expire una sesión
-SESSION_EXPIRATION_TIME = 86400
+SESSION_EXPIRATION_TIME = 300
+
+BLOCK_SIZE = 16
 
 # Parámetros de Diffie-Hellman
 
@@ -42,3 +48,13 @@ def is_logged_in():
 
 def get_sesion():
     return sesiones_activas()[0]
+
+# Definir función hash sha 256
+def h(m):
+    return sha256(m.encode('utf-8')).hexdigest().upper()
+
+
+# Definir desencripción AES256
+def decrypt(C, k, IV):
+    cipher = AES.new(bytes.fromhex(k), AES.MODE_CBC, iv=bytes.fromhex(IV))
+    return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x00')
