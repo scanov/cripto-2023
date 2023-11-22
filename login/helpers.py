@@ -2,7 +2,6 @@ from django.utils import timezone
 from .models import Sesion
 from hashlib import sha256
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 import base64
 
 #Segundos antes de que expire una sesión
