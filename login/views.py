@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
 from secrets import randbits
+from django.shortcuts import render
 
 from .models import Sesion
 from .helpers import is_logged_in, get_sesion, g, p, PB, h, N, e, decrypt, NA
@@ -86,7 +87,7 @@ def ssh3(request):
         desencripcion = decrypt(C, k, IV)
     except:
         return JsonResponse({"message": "Encripcion incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
-    print(f"{desencripcion=}")
+    # print(f"{desencripcion=}")
     # Verificar que la desencripcion contiene a "Alice"
     if "Alice" not in desencripcion:
         return JsonResponse({"message": "Encripcion incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
@@ -95,7 +96,7 @@ def ssh3(request):
         eA = desencripcion[:desencripcion.index("Alice")]
         # Verificar la firma de Alice
         SA_signed = desencripcion[desencripcion.index("Alice") + 5:]
-        print(f"{SA_signed=}")
+        # print(f"{SA_signed=}")
         SA_int = str(hex(pow(int(SA_signed, 16), int(eA, 16), int(NA, 16))))[2:].upper()
         SA = bytes.fromhex(SA_int).decode('utf-8')
     except:
@@ -106,3 +107,6 @@ def ssh3(request):
     sesion.tunel_establecido = True
     sesion.save()
     return JsonResponse({"message": "Tunel establecido"}, status=status.HTTP_200_OK)
+
+def login(request):
+    return render(request, 'login.html')

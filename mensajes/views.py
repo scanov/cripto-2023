@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
 from secrets import token_hex
+from django.shortcuts import render
 
 from .models import Mensaje
 from .serializers import MensajeSerializer
@@ -75,4 +76,5 @@ def read_message(request, mensaje_id: int):
     # Retornar el mensaje
     return JsonResponse({"texto": texto_encriptado, "iv": IV}, status=status.HTTP_200_OK)
 
-
+def mensajes(request):
+    return render(request, 'mensajes.html')

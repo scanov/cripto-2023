@@ -1,0 +1,22 @@
+
+
+{% load static %}
+<html>
+
+<nav>
+    <ul>
+        <li><a href="../login">Log In</a></li>
+        <li><a href="../mensajes">Mensajes</a></li>
+    </ul>
+</nav>
+
+<script src="{% static 'mensajes/mensajes.js' %}"></script>
+
+
+<button onclick="get_messages()">Ver Mensajes</button><br><br>
+<input type="text" id="fname" name="fname">
+<button id="message" onclick="send_message()">enviar mensaje</button><br><br>
+<button onclick="download()">descargar</button>
+
+<div id="result"></div>
+</html>
