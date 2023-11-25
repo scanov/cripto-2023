@@ -1,21 +1,6 @@
 URL = "http://localhost:8000/"
 
-async function get_messages() {
-    const params = {
-        method:"GET",
-    }
-    
-    const res = await fetch(URL+"mensaje/",params)
-    const data = await res.json()
-    console.log(data)
 
-    data.mensajes.forEach(function(element) {
-        var node = document.createElement("LI");
-        var textnode = document.createTextNode(element);
-        node.appendChild(textnode);
-        document.getElementById("result").appendChild(node);
-     });
-}
 
 function hexToArrayBuffer (input) {
     if (typeof input !== 'string') {
@@ -53,8 +38,7 @@ function getMessageEncoding() {
   
 function encryptMessage(key,iv) {
     let encoded = getMessageEncoding();
-    // iv will be needed for decryption
-    iv = iv;
+  
     return window.crypto.subtle.encrypt(
       {
         name: "AES-CBC",
@@ -73,13 +57,14 @@ function toHexString(byteArray) {
 
 async function send_message(){
 
-    iv = "7be219757228099f1bc4a47000d38b13"
-    abIv = hexToArrayBuffer(iv)
-    const acKey = hexToArrayBuffer("ADBF05D88B596D1E5D2A0144F83AD30484B9C8674D7F61D068E4B7276FFE077B")
-    const k = await importSecretKey(acKey);
-    const enc_buffer = await encryptMessage(k, abIv)
+    const iv = "7be219757228099f1bc4a47000d38b13"
+    const IvAb = hexToArrayBuffer(iv)
+    const KeyAb = hexToArrayBuffer("ADBF05D88B596D1E5D2A0144F83AD30484B9C8674D7F61D068E4B7276FFE077B")
+    const k = await importSecretKey(KeyAb);
+    const enc_buffer = await encryptMessage(k, IvAb)
     const enc_Array = new Uint8Array(enc_buffer)
     const enc_message = toHexString(enc_Array)
+
 
     const body = {
         iv: "7be219757228099f1bc4a47000d38b13",
@@ -97,6 +82,90 @@ async function send_message(){
     const res = await fetch(URL+"mensaje/",params)
     const data = await res.json()
 
-    console.log(data.message)
+    document.getElementById("sendResult").innerHTML=data.message
 
 }
+
+function hexToInt(inputStr) {
+  var hex  = inputStr.toString();
+  var Uint8Array = new Array();
+  for (var n = 0; n < hex.length; n += 2) {
+    Uint8Array.push(parseInt(hex.substr(n, 2), 16));
+  }
+  return Uint8Array;
+}
+
+async function decryptMessage(key, ciphertext) {
+  const cipherArray = hexToInt(ciphertext)
+  const cipherBuffer = new Uint8Array(cipherArray).buffer
+  const iv = "7be219757228099f1bc4a47000d38b13"
+  const IvAb = hexToArrayBuffer(iv)
+  return window.crypto.subtle.decrypt({ name: "AES-CBC", iv:IvAb}, key, cipherBuffer);
+}
+
+async function get_message() {
+  const params = {
+    method:"GET",
+  }
+
+  const messageBox = document.querySelector("#messageId")
+  let messageId = messageBox.value
+
+  const res = await fetch(URL+"mensaje/"+messageId+"/", params)
+  const data = await res.json()
+  const ciphertext = data.texto.slice(0,32)
+  const KeyAb = hexToArrayBuffer("ADBF05D88B596D1E5D2A0144F83AD30484B9C8674D7F61D068E4B7276FFE077B")
+  const k = await importSecretKey(KeyAb);
+
+  try{
+    const dec_buffer = await decryptMessage(k, ciphertext)
+    let dec = new TextDecoder();
+    const dec_message = dec.decode(dec_buffer)
+    document.getElementById("getResult").innerHTML=dec_message
+  } catch (e){
+    console.log(e)
+  }
+
+}
+
+async function get_messages() {
+  const params = {
+      method:"GET",
+  }
+  
+  const res = await fetch(URL+"mensaje/",params)
+  const data = await res.json()
+  const mensajes = data.mensajes
+
+  if (res.status == 200) {
+    let table = document.getElementById("table")
+    table.innerHTML = "";
+    let keys = Object.keys(mensajes[0]);
+    generateTable(table, mensajes);
+    generateTableHead(table, keys); 
+  }
+}
+
+
+function generateTableHead(table, data) {
+  let thead = table.createTHead();
+  let row = thead.insertRow();
+  for (let key of data) {
+    let th = document.createElement("th");
+    let text = document.createTextNode(key);
+    th.appendChild(text);
+    row.appendChild(th);
+  }
+}
+
+function generateTable(table, data) {
+  for (let element of data) {
+    let row = table.insertRow();
+    for (key in element) {
+      let cell = row.insertCell();
+      let text = document.createTextNode(element[key]);
+      cell.appendChild(text);
+    }
+  }
+}
+
