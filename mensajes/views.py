@@ -24,12 +24,10 @@ def send_read_message(request):
         sesion = get_sesion()
         # Desencriptar el mensaje
         try:
-            texto = decrypt(request.data["texto"], sesion.k, data["iv"])
+            texto = decrypt(data["texto"], sesion.k, data["iv"])
             print('texto')
         except Exception as e:
-            print('out')
             return JsonResponse({"message": "Encripcion invalida"}, status=status.HTTP_400_BAD_REQUEST)
-        print(texto)
         # Guardar el mensaje reencriptado en la base de datos
         # IV = token_hex(16)
         IV = "7be219757228099f1bc4a47000d38b13"
@@ -75,5 +73,6 @@ def read_message(request, mensaje_id: int):
     # IV = token_hex(16)
     IV = "7be219757228099f1bc4a47000d38b13"
     texto_encriptado = encrypt(texto, sesion.k, IV)
+    print(texto)
     # Retornar el mensaje
     return JsonResponse({"texto": texto_encriptado, "iv": IV}, status=status.HTTP_200_OK)

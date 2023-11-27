@@ -119,7 +119,7 @@ async function login() {
   console.log(data3)
 
   const sendButton = document.getElementById("send-button")
-  sendButton.addEventListener("click", () => { send_message(simk,ivArray) })
+  sendButton.addEventListener("click", () => { send_message(k,iv) })
 
   const messageButton = document.getElementById('message-button')
   messageButton.addEventListener("click", () => { get_message(k,iv) })
@@ -243,31 +243,24 @@ function encryptMessageB(key, iv) {
   );
 }
 
-async function send_message(k,ivArray) {
+async function send_message(k,iv) {
 
   // const iv = "7be219757228099f1bc4a47000d38b13"
-  // const IvAb = hexToArrayBuffer(iv)
+  const ivAb = hexToArrayBuffer(iv)
   // const KeyAb = hexToArrayBuffer("ADBF05D88B596D1E5D2A0144F83AD30484B9C8674D7F61D068E4B7276FFE077B")
-  // const KeyAb = hexToArrayBuffer(k.toUpperCase())
-  // const sk = await importSecretKey(KeyAb);
-  // const enc_buffer = await encryptMessageB(sk, IvAb)
-  // const enc_Array = new Uint8Array(enc_buffer)
-  // const enc_message = toHexString(enc_Array)
-
+  const KeyAb = hexToArrayBuffer(k.toUpperCase())
+  const sk = await importSecretKey(KeyAb);
   const messageBox = document.getElementById("message")
   let message = messageBox.value;
-  console.log(message)
   let enc = new TextEncoder().encode(message)
 
-  const buf2 = await encryptMessage(enc, k, ivArray)
-  let em2 = toHexString(new Uint8Array(buf2)).toUpperCase()
-  console.log(em2)
-  // console.log(enc_message)
-  // console.log(iv)
+  const buf2 = await encryptMessage(enc, sk, ivAb)
+  let em = toHexString(new Uint8Array(buf2)).toUpperCase()
+
 
   const body = {
-    iv: toHexString(ivArray),
-    texto: em2
+    iv: iv,
+    texto: em
   }
 
   const params = {
@@ -298,11 +291,11 @@ async function decryptMessage(key, iv, ciphertext) {
   const cipherArray = hexToInt(ciphertext)
   const cipherBuffer = new Uint8Array(cipherArray).buffer
   //   const iv = "7be219757228099f1bc4a47000d38b13"
-    const IvAb = hexToArrayBuffer(iv)
+  const IvAb = hexToArrayBuffer(iv)
   return window.crypto.subtle.decrypt({ name: "AES-CBC", iv: IvAb }, key, cipherBuffer);
 }
 
-async function get_message(k,iv) {
+async function get_message(k) {
   const params = {
     method: "GET",
   }
@@ -312,15 +305,16 @@ async function get_message(k,iv) {
 
   const res = await fetch(URL + "mensaje/" + messageId + "/", params)
   const data = await res.json()
-  const ciphertext = data.texto.slice(0, 32)
+  const IV = data.iv
+  const ciphertext = data.texto
   const KeyAb = hexToArrayBuffer(k)
   const sk = await importSecretKey(KeyAb)
-  const ivab = hexToArrayBuffer(iv)
 
   try {
-    const dec_buffer = await decryptMessage(sk, ivab, ciphertext)
+    const dec_buffer = await decryptMessage(sk, IV, ciphertext)
     let dec = new TextDecoder();
     const dec_message = dec.decode(dec_buffer)
+    console.log(dec_message)
     document.getElementById("getResult").innerHTML = dec_message
   } catch (e) {
     console.log(e)
@@ -328,9 +322,7 @@ async function get_message(k,iv) {
 
 }
 
-async function get_messages(k,iv) {
-
-  console.log(k, iv)
+async function get_messages() {
 
   const params = {
     method: "GET",
