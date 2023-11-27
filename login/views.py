@@ -108,5 +108,5 @@ def ssh3(request):
     sesion.save()
     return JsonResponse({"message": "Tunel establecido"}, status=status.HTTP_200_OK)
 
-def login(request):
-    return render(request, 'login.html')
+def index(request):
+    return render(request, 'index.html')

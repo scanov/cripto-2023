@@ -1,0 +1,42 @@
+{% load static %}
+<html>
+
+<nav class="navbar navbar-default">
+    <ul class="nav nav-tabs">
+        <li ><a href="../login">Log In</a></li>
+        <li ><a href="../mensajes">Mensajes</a></li>
+    </ul>
+</nav>
+
+<button class="btn btn-default" id="login">Log In</button>
+<br><br>
+
+<input type="text" id="message">
+<button class="btn btn-default" id = "send-button" id="send-button">enviar mensaje</button>
+<p id="sendResult" cols="30" rows="10"></p>
+<br><br>
+<input type="text" id="messageId">
+<button class="btn btn-default" id="message-button">obtener mensaje</button>
+<p id="getResult" cols="30" rows="10"></p>
+<br><br>
+<button class="btn btn-default" id="messages-button">Ver Mensajes</button>
+<br><br>
+<table id="table">
+
+</table>
+
+<div id="result"></div>
+
+<script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+<!-- <script type="module" src="{% static 'login/login.js' %}"></script> -->
+<script src="{% static 'script.js' %}"></script>
+
+<style>
+    .horizontal{
+        display: inline-block;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+ integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+</html>

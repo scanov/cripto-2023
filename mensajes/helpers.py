@@ -27,8 +27,15 @@ def get_sesion():
 
 # Desencriptar AES
 def decrypt(C, k, IV):
+    print(C, IV)
     cipher = AES.new(bytes.fromhex(k), AES.MODE_CBC, iv=bytes.fromhex(IV))
-    return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x00')
+    try:
+        print(repr(bytes.fromhex(C)))
+        print(cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x05'))
+    except Exception as inst:
+        print('ins')
+        print(inst)
+    return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x05')
 
 
 # Encriptar AES

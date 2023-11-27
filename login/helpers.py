@@ -64,4 +64,4 @@ def h(m):
 # Definir desencripción AES256
 def decrypt(C, k, IV):
     cipher = AES.new(bytes.fromhex(k), AES.MODE_CBC, iv=bytes.fromhex(IV))
-    return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x00')
+    return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x05')
