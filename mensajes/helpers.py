@@ -1,6 +1,6 @@
 from login.models import Sesion
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
+from Crypto.Util.Padding import pad, unpad
 from os import environ
 
 # Llave de aes local
@@ -28,8 +28,8 @@ def get_sesion():
 # Desencriptar AES
 def decrypt(C, k, IV):
     cipher = AES.new(bytes.fromhex(k), AES.MODE_CBC, iv=bytes.fromhex(IV))
-    return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip('\x05')
-
+    # return cipher.decrypt(bytes.fromhex(C)).decode('utf-8').rstrip()
+    return unpad(cipher.decrypt(bytes.fromhex(C)),16).decode('utf-8').strip()
 
 
 # Encriptar AES

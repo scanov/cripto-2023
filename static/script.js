@@ -314,7 +314,6 @@ async function get_message(k) {
     const dec_buffer = await decryptMessage(sk, IV, ciphertext)
     let dec = new TextDecoder();
     const dec_message = dec.decode(dec_buffer)
-    console.log(dec_message)
     document.getElementById("getResult").innerHTML = dec_message
   } catch (e) {
     console.log(e)

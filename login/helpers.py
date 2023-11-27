@@ -5,7 +5,7 @@ from Crypto.Cipher import AES
 import base64
 
 #Segundos antes de que expire una sesión
-SESSION_EXPIRATION_TIME = 15
+SESSION_EXPIRATION_TIME = 60
 
 BLOCK_SIZE = 16
 
