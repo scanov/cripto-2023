@@ -22,8 +22,8 @@ def ssh1(request):
     if data["username"] != "Alice":
         return JsonResponse({"message": "Usuario no existe"}, status=status.HTTP_404_NOT_FOUND)
     # Crear una nueva sesion con ra y rb aleatorio
-    #rb = str(hex(randbits(128)))[2:].upper()
-    rb = "C4944595FE0A83CEC05B5BAFD85157E5"
+    rb = str(hex(randbits(128)))[2:].upper()
+    # rb = "C4944595FE0A83CEC05B5BAFD85157E5"
     sesion = Sesion(ra=data["ra"], rb=rb)
     sesion.save()
     # Retornar rb
@@ -43,8 +43,8 @@ def ssh2(request):
     sesion = get_sesion()
     sesion.ga_mod_p = data["ga_mod_p"]
     # Generar b
-    #b = randbits(128)
-    b = int("a243cc63e803badd66e2da2770b1d2ae", 16)
+    b = randbits(128)
+    # b = int("a243cc63e803badd66e2da2770b1d2ae", 16)
     # Calcular gb_mod_p y almacenarlo en la sesion
     gb_mod_p = str(hex(pow(g, b, p)))[2:]
     sesion.gb_mod_p = gb_mod_p

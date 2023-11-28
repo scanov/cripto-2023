@@ -16,14 +16,6 @@ const n = '00C5C2A55B51764AA28E2B7E650F601CEAE6334BA99771A2F8B0C1085E9EEDAA96D3C
 
 const d = '44E9BAC0932713040961CBA640D0DFD2D54C1BBA29DD7E0A866185DE9F2837D15E51B8E3B4E39A1D0DCA647B411774627D83B1BA81DBDF2C7B3968FF488977EFC689F19BEC1FB5C656248B7F4032E0B8B2CC7E2BA42DAF785A65AA4DBE7B56864FD2CBBFF68EDBA4726DA969A5F3BADD01F99E7CC9AD7FE9FD30626550CF8D2189440EDF899B3801C588F6B52A457DD4871A0C9AB965D83B426EF96949E96FADC0BCBE9D134B09FCAD7CB4DA1B97212822A32C6B0EB37D0AB8F61557CCAE47C5BC481FEE2326E23675A783547067C20994C8B75555ADE8058FBDA2DB8F3F270372C7BC4B3C438E0A16C2EF7ECD9B5B1891CA495F759367698A1B2837886683F1'
 
-// function toHexString(byteArray) {
-//   var s = '';
-//   byteArray.forEach(function (byte) {
-//     s += ('0' + (byte & 0xFF).toString(16)).slice(-2);
-//   });
-//   return s;
-// }
-
 function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function (byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
@@ -77,11 +69,19 @@ function encryptMessage(message, key, iv) {
 }
 
 async function login() {
+
+  // ssh1
+
+  // obtenemos el username
+  const userBox = document.getElementById("user")
+  let user = userBox.value;
+
   // creamos el reto de alice y lo enviamos
   const rArray = window.crypto.getRandomValues(new Uint8Array(16))
   const ra = toHexString(rArray)
-  const data1 = await ssh1(ra)
+  const data1 = await ssh1(user,ra)
 
+  // ssh2
 
   const rb = data1.rb
   // creamos a, calculamos g^a mod p y lo enviamos
@@ -91,6 +91,7 @@ async function login() {
   const ga_mod_p = bigInt(g).modPow(a, p).toString(16)
   const data2 = await ssh2(ga_mod_p)
 
+  // ssh3
 
   const nb = bigInt(data2.PB.N, 16)
   const e = data2.PB.e
@@ -116,7 +117,7 @@ async function login() {
   const encripcion = toHexString(enc_Array)
 
   const data3 = await ssh3(encripcion, iv)
-  console.log(data3)
+  alert(data3.message)
 
   const sendButton = document.getElementById("send-button")
   sendButton.addEventListener("click", () => { send_message(k,iv) })
@@ -150,9 +151,9 @@ const hexToString = (hex) => {
   return str;
 };
 
-async function ssh1(ra) {
+async function ssh1(user, ra) {
 
-  const body = { username: "Alice", ra: ra }
+  const body = { username: user, ra: ra }
 
   const params = {
     method: "POST",
@@ -224,24 +225,6 @@ async function ssh3(encripcion, iv) {
 
 }
 
-function getMessageEncoding() {
-  const messageBox = document.querySelector("#message");
-  let message = messageBox.value
-  let enc = new TextEncoder()
-  return enc.encode(message)
-}
-
-function encryptMessageB(key, iv) {
-  let encoded = getMessageEncoding();
-  return window.crypto.subtle.encrypt(
-    {
-      name: "AES-CBC",
-      iv: iv,
-    },
-    key,
-    encoded,
-  );
-}
 
 async function send_message(k,iv) {
 
